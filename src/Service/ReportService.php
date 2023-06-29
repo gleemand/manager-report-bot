@@ -19,12 +19,12 @@ class ReportService
         $this->container = $container;
     }
 
-    public function execute(): void
+    public function execute(?\DateTimeImmutable $reportDate = null): void
     {
         $managers = $this->getManagers();
 
         foreach ($managers as $manager) {
-            $report = $this->buildReport($manager);
+            $report = $this->buildReport($manager, $reportDate);
 
             $this->sendReport($report);
         }
@@ -38,9 +38,9 @@ class ReportService
         return $this->crmApi->getUsersByGroup($this->container->getParameter('crm_group'));
     }
 
-    private function buildReport(User $manager): Report
+    private function buildReport(User $manager, ?\DateTimeImmutable $reportDate = null): Report
     {
-        $reportDate = new \DateTimeImmutable('yesterday');
+        $reportDate = $reportDate ?? new \DateTimeImmutable('yesterday');
 
         $dialogs = $this->crmApi->getDialogsByManagerAndDate($manager->mgUserId, $reportDate);
         $orders = $this->crmApi->getOrdersByManagerAndDate($manager->id, $reportDate, array_keys(Report::STATUSES));
