@@ -7,7 +7,7 @@ class Report
     public const STATUSES = [
         '2' => '📤 Сделали первый контакт',
         'prezentatsiia-naznachena' => '🗓 Презентация назначена',
-        'provedena-prezentatsiia' => '🖥  Проведено презентаций',
+        'provedena-prezentatsiia' => 'popadal_v_status_provedena_prezentatsiia',
         'prezentatsiia-perenesena' => '🕐 Презентация перенесена',
         'kp-otpravleno' => '📩 КП отправлено',
         'waiting-for-1st-payment' => '💸 Счетов выставлено',
@@ -15,6 +15,10 @@ class Report
         'popytka-kasaniia-1' => '🟠 Попытка касания 1',
         'popytka-kasaniia-2' => '🟡 Попытка касания 2',
         'popytka-kasaniia-3' => '🔵 Попытка касания 3',
+    ];
+
+    public const CUSTOM_FIELDS = [
+        'popadal_v_status_provedena_prezentatsiia' => '🖥  Проведено презентаций'
     ];
 
     private \DateTimeImmutable $date;
@@ -55,7 +59,22 @@ class Report
         $output = [];
 
         foreach (self::STATUSES as $code => $name) {
-            $orders = $this->getOrdersByStatus($code);
+            if (array_key_exists($name, self::CUSTOM_FIELDS)) {
+                $orders = $this->getOrdersByCustomField($name);
+                $name = self::CUSTOM_FIELDS[$name];
+            } else {
+                $orders = $this->getOrdersByStatus($code);
+            }
+
+            if ('poluchen-1-platezh-1' === $code) {
+                $orders = array_merge(
+                    $orders,
+                    $this->getOrdersByStatus('iwip'),
+                    $this->getOrdersByStatus('rabochaya'),
+                    $this->getOrdersByStatus('venta-de-socios')
+                );
+            }
+
             $output[] = sprintf('*%s: %d*', $name, count($orders));
 
             $index = 1;
@@ -72,5 +91,10 @@ class Report
     private function getOrdersByStatus(string $status): array
     {
         return array_filter($this->orders, static fn($order) => $order->status === $status);
+    }
+
+    private function getOrdersByCustomField(string $customField): array
+    {
+        return array_filter($this->orders, static fn($order) => $order->customFields[$customField] === true);
     }
 }
