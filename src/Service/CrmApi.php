@@ -9,7 +9,6 @@ use RetailCrm\Api\Enum\NumericBoolean;
 use RetailCrm\Api\Enum\PaginationLimit;
 use RetailCrm\Api\Factory\SimpleClientFactory;
 use RetailCrm\Api\Interfaces\ApiExceptionInterface;
-use RetailCrm\Api\Model\Entity\Users\User;
 use RetailCrm\Api\Model\Filter\Orders\OrderFilter;
 use RetailCrm\Api\Model\Filter\Users\ApiUserFilter;
 use RetailCrm\Api\Model\Request\Orders\OrdersRequest;
@@ -71,7 +70,6 @@ class CrmApi
         $request->page = 1;
         $request->filter = new OrderFilter();
         $request->filter->managers = [$managerId];
-        $request->filter->extendedStatus = $statuses;
         //$request->filter->createdAtFrom = $request->filter->createdAtTo = $day->format('Y-m-d');
         $request->filter->statusUpdatedAtFrom = $request->filter->statusUpdatedAtTo = $day->format('Y-m-d');
 
