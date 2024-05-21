@@ -70,6 +70,7 @@ class CrmApi
         $request->page = 1;
         $request->filter = new OrderFilter();
         $request->filter->managers = [$managerId];
+        //$request->filter->extendedStatus = $statuses;
         //$request->filter->createdAtFrom = $request->filter->createdAtTo = $day->format('Y-m-d');
         $request->filter->statusUpdatedAtFrom = $request->filter->statusUpdatedAtTo = $day->format('Y-m-d');
 
